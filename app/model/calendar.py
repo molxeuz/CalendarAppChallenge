@@ -86,3 +86,64 @@ class Day:
         self.add_event(event_id, start_at, end_at)
 
 # TODO: Implement Calendar class here
+class Calendar:
+    """Clase principal que maneja los eventos y días en el calendario."""
+    def __init__(self):
+        self.days = {}
+        self.events = {}
+
+    def add_event(self, title: str, description: str, date_: date, start_at: time, end_at: time):
+        """Añade un evento al calendario."""
+        if date_ < datetime.now().date():
+            date_lower_than_today_error()
+            return None
+
+        if date_ not in self.days:
+            self.days[date_] = Day(date_)
+
+        event = Event(title, description, date_, start_at, end_at)
+        self.days[date_].add_event(event.id, start_at, end_at)
+        self.events[event.id] = event
+
+        return event.id
+
+    def add_reminder(self, event_id: str, date_time: datetime, type_: str = Reminder.EMAIL):
+        """Añade un recordatorio a un evento."""
+        if event_id not in self.events:
+            event_not_found_error()
+            return
+        self.events[event_id].add_reminder(date_time, type_)
+
+    def delete_reminder(self, event_id: str, reminder_index: int):
+        """Elimina un recordatorio de un evento."""
+        if event_id not in self.events:
+            event_not_found_error()
+            return
+        self.events[event_id].delete_reminder(reminder_index)
+
+    def list_reminders(self, event_id: str):
+        """Lista los recordatorios de un evento."""
+        if event_id not in self.events:
+            event_not_found_error()
+            return []
+        return self.events[event_id].reminders
+
+    def find_available_slots(self, date_: date):
+        """Busca los espacios disponibles en una fecha específica."""
+        if date_ not in self.days:
+            return [time(hour, minute) for hour in range(24) for minute in range(0, 60, 15)]
+        
+        return [slot for slot, event_id in self.days[date_].slots.items() if event_id is None]
+
+    def find_events(self, start_at: date, end_at: date):
+        """Busca los eventos en un rango de fechas."""
+        return {date_: [event for event in self.events.values() if start_at <= event.date_ <= end_at] for date_ in self.days if start_at <= date_ <= end_at}
+
+    def delete_event(self, event_id: str):
+        """Elimina un evento del calendario."""
+        if event_id not in self.events:
+            event_not_found_error()
+            return
+        event = self.events.pop(event_id)
+        if event.date_ in self.days:
+            self.days[event.date_].delete_event(event_id)
