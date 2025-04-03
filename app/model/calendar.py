@@ -21,27 +21,27 @@ class Reminder:
 
 # TODO: Implement Event class here
 @dataclass
-class Evento:
+class Event:
     """Clase que representa un evento en el calendario."""
-    titulo: str
-    descripcion: str
-    fecha: date
-    inicio: time
-    fin: time
-    id: str = field(default_factory=generar_id_unico)
-    recordatorios: list[Recordatorio] = field(default_factory=list)
+    title: str
+    description: str
+    date_: date
+    start_at: time
+    end_at: time
+    id: str = field(default_factory=generate_unique_id)
+    reminders: list[Reminder] = field(default_factory=list)
 
-    def agregar_recordatorio(self, fecha_hora: datetime, tipo: str = Recordatorio.EMAIL):
-        self.recordatorios.append(Recordatorio(fecha_hora, tipo))
+    def add_reminder(self, date_time: datetime, type_: str = Reminder.EMAIL):
+        self.reminders.append(Reminder(date_time, type_))
 
-    def eliminar_recordatorio(self, indice: int):
-        if 0 <= indice < len(self.recordatorios):
-            self.recordatorios.pop(indice)
+    def delete_reminder(self, reminder_index: int):
+        if 0 <= reminder_index < len(self.reminders):
+            self.reminders.pop(reminder_index)
         else:
-            error_recordatorio_no_encontrado()
+            reminder_not_found_error()
 
     def __str__(self):
-        return f"ID: {self.id}\nTítulo: {self.titulo}\nDescripción: {self.descripcion}\nHora: {self.inicio} - {self.fin}"
+        return f"ID: {self.id}\nEvent title: {self.title}\nDescription: {self.description}\nTime: {self.start_at} - {self.end_at}"
 
 # TODO: Implement Day class here
 
